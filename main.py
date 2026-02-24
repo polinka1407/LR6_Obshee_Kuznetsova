@@ -39,13 +39,18 @@ print(tframe2)
 
 #контейнер граф. вывода
 from matplotlib  import pyplot as plt
+plt.figure(figsize=(10, 5))
 plt.plot(tframe['Y'], tframe['C_ost_lst'], label = 'Am')
 plt.plot(tframe2['Y'], tframe2['C_ost_lst_2'], label = 'Am_2')
-plt.show()
+plt.legend()
+plt.savefig('plot1.png')
+print("Линейный график сохранен в plot1.png")
+
 vals = Am_lst
-labels = list(range(1, 6))
+labels = [str(i) for i in range(1, 6)]
 explode = (0.1, 0.1, 0.1, 0.1, 0.1)
 fig, ax = plt.subplots()
 ax.pie(vals, labels=labels, explode=explode, autopct='%1.1f%%', shadow=True, wedgeprops = {'lw':1, 'ls':'--','edgecolor':"k"}, rotatelabels=True)
 ax.axis("equal")
-plt.show()
+plt.savefig('plot2.png')
+print("Круговая диаграмма сохранена в plot2.png")
