@@ -2,7 +2,7 @@
 # fig, ax = plt.subplots()
 # ax.plot([1, 2, 3, 4], [1, 4, 2, 5])
 # plt.ylabel('some numbers')
-# plt.savefig('plot.png')
+# plt.savefig('plot.png') # сохранение рафика в файл 
 
 # from sklearn.datasets import make_blobs
 # import pandas as pd
