@@ -1,42 +1,58 @@
-entrypoint = "main.py"
-modules = ["python-3.11"]
+# replit.nix - конфигурация системных пакетов
+
+entrypoint = "main.py"  # Главный скрипт, который запускается при старте
+modules = ["python-3.11"]  # Используемая версия Python
 
 [nix]
-channel = "stable-25_05"
-packages = ["cairo", "ffmpeg-full", "freetype", "ghostscript", "glibcLocales", "gobject-introspection", "gtk3", "pkg-config", "qhull", "tcl", "tk"]
+channel = "stable-25_05"  # Канал пакетного менеджера Nix (стабильная версия)
+packages = [
+    "cairo",                    # Графическая библиотека для векторной графики
+    "ffmpeg-full",              # Полная версия FFmpeg (обработка видео/аудио)
+    "freetype",                 # Рендеринг шрифтов
+    "ghostscript",              # Интерпретатор PostScript и PDF
+    "glibcLocales",             # Локали для корректной работы с текстом
+    "gobject-introspection",    # Мост между C-библиотеками и Python (GObject)
+    "gtk3",                     # GTK3 для графического интерфейса
+    "pkg-config",               # Поиск путей к установленным библиотекам
+    "qhull",                    # Алгоритмы для выпуклых оболочек и триангуляции
+    "tcl",                      # Язык Tcl (зависимость для Tkinter)
+    "tk"                        # Tkinter - GUI для Python графиков
+]
 
 [unitTest]
-language = "python3"
+language = "python3"  # Язык для unit-тестирования
 
 [gitHubImport]
-requiredFiles = [".replit", "replit.nix"]
+requiredFiles = [".replit", "replit.nix"]  # Обязательные файлы при импорте из GitHub
 
 [deployment]
-run = ["python3", "main.py"]
-deploymentTarget = "cloudrun"
+run = ["python3", "main.py"]        # Команда запуска проекта
+deploymentTarget = "cloudrun"       # Развертывание в облаке Replit
 
 [agent]
-expertMode = true
+expertMode = true  # Режим эксперта для агента-помощника
 
 [workflows]
-runButton = "Project"
+runButton = "Project"  # Название кнопки запуска в интерфейсе
 
+# Рабочий процесс "Project" (параллельное выполнение)
 [[workflows.workflow]]
 name = "Project"
-mode = "parallel"
+mode = "parallel"    # Параллельный режим выполнения задач
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Run Main Script"
 
+# Рабочий процесс "Run Main Script" (запуск основного скрипта)
 [[workflows.workflow]]
 name = "Run Main Script"
 author = "agent"
 
 [workflows.workflow.metadata]
-outputType = "console"
+outputType = "console"  # Вывод результатов в консоль
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python main.py && ls -l *.png"
+args = "python main.py && ls -l *.png"  # Запуск скрипта + просмотр созданных PNG-файлов
