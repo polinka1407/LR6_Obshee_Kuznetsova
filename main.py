@@ -1,56 +1,60 @@
-from sympy import *
-k, T, C, L = symbols('k C T L')
+# import matplotlib.pyplot as plt 
+# fig, ax = plt.subplots()
+# ax.plot([1, 2, 3, 4], [1, 4, 2, 5])
+# plt.ylabel('some numbers')
+# plt.savefig('plot.png')
 
-#1
-C_ost = 100000
-Am_lst = []
-C_ost_lst = []
-for i in range(5):
-  Am = (C-L)/T
-  C_ost -= Am.subs({C: 100000, T:5, L:0})
-  Am_lst.append(round(Am.subs({C: 100000, T:5, L:0}), 2))
-  C_ost_lst.append(round(C_ost, 2))
-print('Am_lst: ', Am_lst)
-print('C_ost_lst: ', C_ost_lst)
+# from sklearn.datasets import make_blobs
+# import pandas as pd
+# # dataset, classes = make_blobs(n_samples=200, n_features=2, centers=4, cluster_std=0.5, randome_state=0)
+# df = pd.DataFrame(dataset, columns=['var1', 'var2'])
+# print(df.head(2))
 
-#2
-Aj = 0
-C_ost = 100000
-Am_lst_2 = []
-C_ost_lst_2 = []
-for i in range(5):
-  Am = k * 1/T * (C - Aj)
-  C_ost -= Am.subs({C: 100000, T:5, k:2})
-  Am_lst_2.append(round(Am.subs({C: 100000, T:5, k:2}), 2))
-  Aj += Am
-  C_ost_lst_2.append(round(C_ost, 2))
-print('Am_lst_2: ', Am_lst_2)
-print('C_ost_lst_2: ', C_ost_lst_2)
+import sklearn
+print(sklearn.__version__) # проверка версии библиотеки 
+ 
+# №3: Генерация данных и создание DataFrame
+from sklearn.datasets import make_blobs #генерация данных 
+import pandas as pd # работа с данными 
 
-#табл вывод
-import pandas as pd
-Y = range(1, 6)
-table1 = list(zip(Y, C_ost_lst, Am_lst))
-table2 = list(zip(Y, C_ost_lst_2, Am_lst_2))
-tframe = pd.DataFrame(table1, columns = ['Y', 'C_ost_lst', 'Am_lst'])
-tframe2 = pd.DataFrame(table2, columns = ['Y', 'C_ost_lst_2', 'Am_lst_2'])
-print(tframe)
-print(tframe2)
+dataset, classes = make_blobs(n_samples=200, n_features=2, centers=4, cluster_std=0.5, random_state=0)
+df = pd.DataFrame(dataset, columns=['var1', 'var2'])
+print(df.head(2)) # вывод первых двух строк 
 
-#контейнер граф. вывода
-from matplotlib  import pyplot as plt
-plt.figure(figsize=(10, 5))
-plt.plot(tframe['Y'], tframe['C_ost_lst'], label = 'Am')
-plt.plot(tframe2['Y'], tframe2['C_ost_lst_2'], label = 'Am_2')
+# №3: Elbow метод для определения оптимального числа кластеров
+from yellowbrick.cluster import KElbowVisualizer # визуализация 
+from sklearn.cluster import KMeans # алгоритм кластеризации 
+import matplotlib.pyplot as plt 
+
+plt.rcParams["font.family"] = "sans-serif" # шрифт 
+plt.rcParams["font.sans-serif"] = ["DejaVu Sans"]
+
+X, y = make_blobs(n_samples=300, centers=4, n_features=2, random_state=42) # генерация данных 
+df = pd.DataFrame(X, columns=['var1', 'var2']) # создание DataFrame
+
+model = KMeans(random_state=42) 
+visualizer = KElbowVisualizer(model, k=(1,12)) # визуализация 
+visualizer.fit(df) # обучение модели 
+
+plt.savefig("elbow_method.png", dpi=150, bbox_inches="tight")
+plt.close()
+
+# №4: Обучение модели KMeans с 4 кластерами
+kmeans = KMeans(n_clusters=4, init='k-means++', random_state=0).fit(df) # обучение модели 
+print(kmeans.labels_) # метки кластеров 
+print(kmeans.cluster_centers_) # координаты центроидов 
+print(kmeans.inertia_) # сумма квадратов расстояний от каждой точки до ближайшего центроида 
+print(kmeans.n_iter_) # количество итераций 
+
+# №5: Подсчет объектов в кластерах
+from collections import Counter 
+labels = kmeans.labels_.tolist() # преобразование меток кластеров в список 
+print(Counter(labels)) # подсчет кол-ва объектов в каждом кластере 
+
+# №6-7: Визуализация результатов кластеризации
+import seaborn as sns # визуализация данных 
+sns.scatterplot(data=df, x="var1", y="var2", hue=kmeans.labels_) 
+plt.scatter(kmeans.cluster_centers_[:,0],
+            kmeans.cluster_centers_[:,1], marker="X", c="r", s=80, label="centroids") # центроиды 
 plt.legend()
-plt.savefig('plot1.png')
-print("Линейный график сохранен в plot1.png")
-
-vals = Am_lst
-labels = [str(i) for i in range(1, 6)]
-explode = (0.1, 0.1, 0.1, 0.1, 0.1)
-fig, ax = plt.subplots()
-ax.pie(vals, labels=labels, explode=explode, autopct='%1.1f%%', shadow=True, wedgeprops = {'lw':1, 'ls':'--','edgecolor':"k"}, rotatelabels=True)
-ax.axis("equal")
-plt.savefig('plot2.png')
-print("Круговая диаграмма сохранена в plot2.png")
+plt.savefig("clust.png") # сохранение графика 
